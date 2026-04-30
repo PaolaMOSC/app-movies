@@ -1,308 +1,615 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap");
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
 
 body {
   margin: 0;
-  font-family: "Inter", sans-serif;
-  background: radial-gradient(circle at top, #1e293b 0%, #020617 55%);
-  color: #e2e8f0;
+  font-family: "Inter", "Helvetica Neue", Arial, sans-serif;
+  background-color: #141414;
+  color: #e5e5e5;
   min-height: 100vh;
-  transition: background 0.35s ease, color 0.35s ease;
 }
 
-body[data-theme="light"] {
-  background: radial-gradient(circle at top, #dbeafe 0%, #f8fafc 60%);
-  color: #0f172a;
+/* ── APP ──────────────────────────────────────────── */
+
+.nfApp {
+  min-height: 100vh;
+  background-color: #141414;
 }
 
-.app {
-  --text-main: #e2e8f0;
-  --text-strong: #f8fafc;
-  --text-soft: #94a3b8;
-  --surface-1: rgba(15, 23, 42, 0.8);
-  --surface-2: rgba(15, 23, 42, 0.95);
-  --border-main: #334155;
-  --border-soft: #475569;
-  --card-bg: linear-gradient(145deg, rgba(15, 23, 42, 0.95), #111827);
-  --card-bg-active: linear-gradient(145deg, #0f172a, #112138);
-  --accent: #38bdf8;
-  padding: 36px 20px 48px;
-  max-width: 1120px;
-  margin: 0 auto;
-  color: var(--text-main);
-}
+/* ── NAVBAR ───────────────────────────────────────── */
 
-.app.light {
-  --text-main: #1e293b;
-  --text-strong: #0f172a;
-  --text-soft: #475569;
-  --surface-1: rgba(255, 255, 255, 0.85);
-  --surface-2: rgba(248, 250, 252, 0.95);
-  --border-main: #cbd5e1;
-  --border-soft: #94a3b8;
-  --card-bg: linear-gradient(145deg, #ffffff, #f1f5f9);
-  --card-bg-active: linear-gradient(145deg, #dbeafe, #e2e8f0);
-  --accent: #0284c7;
-}
-
-.hero {
-  text-align: center;
-  margin-bottom: 26px;
-}
-
-.heroTopRow {
+.nfNav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
   display: flex;
-  justify-content: center;
   align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 14px 48px;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.92) 0%, transparent 100%);
 }
 
-.badge {
-  display: inline-block;
-  margin: 0 0 14px;
-  padding: 6px 12px;
-  border-radius: 999px;
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  background-color: rgba(14, 165, 233, 0.18);
-  border: 1px solid rgba(125, 211, 252, 0.35);
-  color: #7dd3fc;
+.nfNavLogo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
 }
 
-.hero h1 {
-  margin: 0 0 10px;
-  color: var(--text-strong);
-  font-size: clamp(2rem, 3.4vw, 2.7rem);
-  line-height: 1.12;
-}
-
-.subtitle {
-  margin: 0;
-  color: var(--text-soft);
-  font-size: 1rem;
-}
-
-.themeButton {
+.nfLogoMark {
   width: 40px;
-  height: 40px;
-  padding: 0;
-  border-radius: 50%;
-  border: 1px solid var(--border-soft);
-  background-color: var(--surface-1);
-  color: var(--text-main);
-  font-family: inherit;
-  font-size: 1.1rem;
-  line-height: 1;
-  cursor: pointer;
-  display: inline-flex;
+  height: 34px;
+  background: #e50914;
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 900;
+  border-radius: 4px;
+  display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.2s ease, border-color 0.2s ease;
+  flex-shrink: 0;
+  letter-spacing: -0.03em;
 }
 
-.themeButton:hover {
-  transform: translateY(-1px);
-  border-color: var(--accent);
+.nfLogoName {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #e50914;
+  letter-spacing: -0.03em;
 }
 
-.filters {
+.nfNavControls {
   display: flex;
-  justify-content: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin: 24px 0 12px;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  justify-content: flex-end;
+  max-width: 640px;
 }
 
-.searchInput,
-.genreSelect {
-  padding: 11px 12px;
-  border-radius: 10px;
-  border: 1px solid var(--border-soft);
-  min-width: 220px;
-  background-color: var(--surface-1);
-  color: var(--text-strong);
+.nfSearchBox {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  max-width: 320px;
+}
+
+.nfSearchIcon {
+  position: absolute;
+  left: 10px;
+  width: 15px;
+  height: 15px;
+  color: #777;
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+.nfSearchInput {
+  width: 100%;
+  padding: 8px 32px 8px 34px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 6px;
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.875rem;
   outline: none;
-  font-family: inherit;
-  font-size: 0.94rem;
+  transition: border-color 0.2s, background 0.2s;
 }
 
-.searchInput::placeholder {
-  color: #94a3b8;
+.nfSearchInput::placeholder {
+  color: #555;
 }
 
-.searchInput:focus,
-.genreSelect:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25);
+.nfSearchInput:focus {
+  border-color: #e50914;
+  background: rgba(0, 0, 0, 0.85);
 }
 
-.clearButton {
-  padding: 11px 14px;
-  border: 1px solid var(--border-soft);
-  border-radius: 10px;
-  background-color: var(--surface-1);
-  color: var(--text-main);
+.nfClearBtn {
+  position: absolute;
+  right: 8px;
+  background: none;
+  border: none;
+  color: #777;
   cursor: pointer;
-  transition: 0.25s;
-  font-weight: 600;
+  padding: 2px 4px;
+  font-size: 0.75rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  transition: color 0.15s;
+}
+
+.nfClearBtn:hover {
+  color: #fff;
+}
+
+.nfSelect {
+  padding: 8px 10px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 6px;
+  color: #e5e5e5;
   font-family: inherit;
-}
-
-.clearButton:hover {
-  border-color: var(--accent);
-}
-
-.resultsText {
-  margin: 10px 0 0;
-  color: var(--text-soft);
-  font-size: 0.9rem;
-  text-align: left;
-}
-
-.contentLayout {
-  margin-top: 14px;
-  display: grid;
-  grid-template-columns: minmax(280px, 380px) 1fr;
-  gap: 18px;
-  align-items: start;
-}
-
-.movieListPanel {
-  background-color: var(--surface-2);
-  border: 1px solid var(--border-main);
-  border-radius: 18px;
-  padding: 14px;
-  max-height: 620px;
-  overflow-y: auto;
-}
-
-.movies {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 10px;
-  margin: 0;
-}
-
-.movieButton {
-  text-align: left;
-  padding: 14px;
-  border: 1px solid var(--border-main);
-  border-radius: 14px;
-  background: var(--card-bg);
-  color: var(--text-main);
+  font-size: 0.84rem;
   cursor: pointer;
-  transition: 0.25s ease;
+  outline: none;
+  white-space: nowrap;
+  transition: border-color 0.2s;
+}
+
+.nfSelect:focus {
+  border-color: #e50914;
+}
+
+.nfResetBtn {
+  padding: 8px 12px;
+  background: rgba(229, 9, 20, 0.12);
+  border: 1px solid rgba(229, 9, 20, 0.35);
+  border-radius: 6px;
+  color: #ff6b6b;
+  font-family: inherit;
+  font-size: 0.84rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+
+.nfResetBtn:hover {
+  background: rgba(229, 9, 20, 0.25);
+}
+
+/* ── HERO ─────────────────────────────────────────── */
+
+.nfHero {
+  position: relative;
+  padding-top: 62px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 400px;
+  overflow: hidden;
+}
+
+.nfHeroGlow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.nfHero::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 90px;
+  background: linear-gradient(to bottom, transparent, #141414);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.nfHeroContent {
+  position: relative;
+  z-index: 1;
+  padding: 52px 0 52px 48px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  min-height: 92px;
+  justify-content: center;
+  gap: 14px;
 }
 
-.movieButton:hover {
-  transform: translateY(-2px);
-  border-color: var(--accent);
-  box-shadow: 0 10px 18px rgba(56, 189, 248, 0.15);
-}
-
-.movieButtonActive {
-  border-color: #22d3ee;
-  background: var(--card-bg-active);
-  box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.4);
-}
-
-.movieTitle {
-  color: var(--text-strong);
+.nfHeroBadge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 0.72rem;
   font-weight: 700;
-  line-height: 1.25;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  width: fit-content;
 }
 
-.movieMeta {
-  color: var(--text-soft);
-  font-size: 0.88rem;
-}
-
-.emptyState {
-  margin-top: 10px;
-  padding: 18px;
-  border-radius: 12px;
-  background-color: var(--surface-1);
-  border: 1px dashed var(--border-soft);
-  color: var(--text-main);
-}
-
-.trailerPanel {
-  position: sticky;
-  top: 16px;
-}
-
-.trailer {
-  background-color: var(--surface-2);
-  border: 1px solid var(--border-main);
-  border-radius: 18px;
-  padding: 22px;
-}
-
-.trailerHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 4px;
-}
-
-.trailer h2 {
+.nfHeroTitle {
   margin: 0;
-  color: var(--text-strong);
+  font-size: clamp(1.8rem, 3vw, 2.8rem);
+  font-weight: 900;
+  color: #fff;
+  line-height: 1.1;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
+  max-width: 480px;
 }
 
-.trailerGenre {
-  font-size: 0.8rem;
-  padding: 5px 10px;
-  border-radius: 999px;
-  background-color: rgba(34, 211, 238, 0.15);
-  color: #67e8f9;
-  border: 1px solid rgba(103, 232, 249, 0.35);
+.nfHeroMeta {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #888;
 }
 
-.trailer p {
-  margin: 0 0 14px;
-  color: var(--text-soft);
+.nfHeroPlayBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 24px;
+  background: var(--hc, #e50914);
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  width: fit-content;
+  transition: opacity 0.2s, transform 0.2s;
 }
 
-.trailer iframe {
+.nfHeroPlayBtn:hover {
+  opacity: 0.88;
+  transform: scale(1.03);
+}
+
+.nfHeroEmbed {
+  position: relative;
+  z-index: 1;
+  padding: 20px 48px 20px 20px;
+  display: flex;
+  align-items: center;
+}
+
+.nfHeroThumb {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 10px;
+  object-fit: cover;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  display: block;
+  background: #111;
+}
+
+.nfHeroThumb:hover {
+  transform: scale(1.02);
+  box-shadow: 0 28px 72px rgba(0, 0, 0, 0.8);
+}
+
+/* ── MAIN ─────────────────────────────────────────── */
+
+.nfMain {
+  padding: 12px 48px 64px;
+}
+
+.nfMainSearch {
+  padding-top: calc(62px + 28px);
+}
+
+/* ── GENRE ROWS ───────────────────────────────────── */
+
+.nfRow {
+  margin-bottom: 36px;
+}
+
+.nfRowLabel {
+  margin: 0 0 12px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #e5e5e5;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nfRowLabel::before {
+  content: "";
+  display: inline-block;
+  width: 3px;
+  height: 1em;
+  background: var(--c, #e50914);
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.nfRowTrack {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 8px 0 12px;
+  scrollbar-width: thin;
+  scrollbar-color: #2e2e2e transparent;
+}
+
+.nfRowTrack::-webkit-scrollbar {
+  height: 3px;
+}
+
+.nfRowTrack::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.nfRowTrack::-webkit-scrollbar-thumb {
+  background: #3a3a3a;
+  border-radius: 2px;
+}
+
+/* ── SEARCH RESULTS ───────────────────────────────── */
+
+.nfResultsTitle {
+  margin: 0 0 16px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #e5e5e5;
+}
+
+.nfGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 8px;
+}
+
+.nfEmpty {
+  color: #555;
+  font-size: 1rem;
+  padding: 32px 0;
+  margin: 0;
+}
+
+/* ── CARD ─────────────────────────────────────────── */
+
+.nfCard {
+  position: relative;
+  flex-shrink: 0;
+  width: 210px;
+  aspect-ratio: 16 / 9;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  background: #1c1c1c;
+}
+
+.nfGrid .nfCard {
+  width: 100%;
+}
+
+.nfCard:hover,
+.nfCard:focus-visible {
+  transform: scale(1.06);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.75);
+  z-index: 5;
+}
+
+.nfCardActive {
+  outline-color: var(--genre-color, #e50914);
+}
+
+.nfCardImg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.nfCardOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.88) 0%,
+    rgba(0, 0, 0, 0.12) 50%,
+    transparent 100%
+  );
+  display: flex;
+  align-items: flex-end;
+  padding: 10px;
+}
+
+.nfCardInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+}
+
+.nfCardTitle {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #fff;
+  text-align: left;
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.nfCardMeta {
+  font-size: 0.68rem;
+  color: #bbb;
+  text-align: left;
+}
+
+/* ── MODAL ────────────────────────────────────────── */
+
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.82);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  backdrop-filter: blur(6px);
+  animation: fadeIn 0.18s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.modalContent {
+  position: relative;
+  background: #1a1a1a;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 880px;
+  overflow: hidden;
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.85);
+  animation: slideUp 0.22s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(24px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.modalClose {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 10;
+  width: 32px;
+  height: 32px;
+  background: rgba(0, 0, 0, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  color: #fff;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+
+.modalClose:hover {
+  background: rgba(229, 9, 20, 0.7);
+}
+
+.modalContent iframe {
   width: 100%;
   aspect-ratio: 16 / 9;
   border: none;
-  border-radius: 14px;
-  background-color: #020617;
+  display: block;
+  background: #000;
+}
+
+.modalInfo {
+  padding: 16px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.modalBadge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  width: fit-content;
+}
+
+.modalTitle {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.modalMeta {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #888;
+}
+
+/* ── HIGHLIGHT ────────────────────────────────────── */
+
+.highlight {
+  background-color: rgba(229, 9, 20, 0.22);
+  color: #ff6b6b;
+  border-radius: 2px;
+  padding: 0 1px;
+  font-weight: 700;
+}
+
+/* ── RESPONSIVE ───────────────────────────────────── */
+
+@media (max-width: 960px) {
+  .nfNav {
+    padding: 14px 24px;
+  }
+
+  .nfHero {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .nfHeroContent {
+    padding: 44px 24px 16px;
+  }
+
+  .nfHeroEmbed {
+    padding: 0 24px 36px;
+  }
+
+  .nfMain {
+    padding: 12px 24px 48px;
+  }
 }
 
 @media (max-width: 640px) {
-  .contentLayout {
-    grid-template-columns: 1fr;
+  .nfNav {
+    padding: 12px 16px;
+    flex-wrap: wrap;
+    gap: 10px;
   }
 
-  .movieListPanel {
-    max-height: 420px;
+  .nfNavControls {
+    width: 100%;
+    max-width: 100%;
   }
 
-  .trailerPanel {
-    position: static;
+  .nfSearchBox {
+    max-width: none;
+    flex: 1;
   }
 
-  .searchInput,
-  .genreSelect {
-    min-width: 100%;
+  .nfHeroContent {
+    padding: 40px 16px 14px;
   }
 
-  .resultsText {
-    text-align: center;
+  .nfHeroEmbed {
+    padding: 0 16px 28px;
   }
 
-  .trailerHeader {
-    flex-direction: column;
-    align-items: flex-start;
+  .nfMain {
+    padding: 10px 16px 40px;
+  }
+
+  .nfCard {
+    width: 160px;
+  }
+
+  .nfGrid {
+    grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
   }
 }

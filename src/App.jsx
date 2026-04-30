@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./App.css";
 
 const movies = [
@@ -190,146 +190,330 @@ const movies = [
   },
 ];
 
-function App() {
-  const [selectedMovie, setSelectedMovie] = useState(movies[0]);
-  const [searchText, setSearchText] = useState("");
-  const [selectedGenre, setSelectedGenre] = useState("Todos");
-  const [theme, setTheme] = useState(() => {
-    const savedTheme = localStorage.getItem("theme");
-    return savedTheme === "light" ? "light" : "dark";
-  });
-  const clearFilters = () => {
-    setSearchText("");
-    setSelectedGenre("Todos");
-  };
+const GENRE_COLORS = {
+  "Acción": "#e50914",
+  "Drama": "#a855f7",
+  "Animación": "#3b82f6",
+  "Comedia": "#f59e0b",
+  "Terror": "#dc2626",
+  "Ciencia ficción": "#10b981",
+  "Fantasía": "#ec4899",
+  "Musical": "#f97316",
+};
 
+function getThumbUrl(trailerUrl) {
+  const id = trailerUrl.split("/embed/")[1]?.split("?")[0];
+  return `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
+}
+
+function HighlightedText({ text, query }) {
+  if (!query.trim()) return <>{text}</>;
+  const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const parts = text.split(new RegExp(`(${escaped})`, "gi"));
+  return (
+    <>
+      {parts.map((part, i) =>
+        part.toLowerCase() === query.toLowerCase() ? (
+          <mark key={i} className="highlight">{part}</mark>
+        ) : (
+          part
+        )
+      )}
+    </>
+  );
+}
+
+function TrailerModal({ movie, onClose }) {
   useEffect(() => {
-    document.body.setAttribute("data-theme", theme);
-    localStorage.setItem("theme", theme);
-  }, [theme]);
+    const onKey = (e) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+    };
+  }, [onClose]);
 
-  const genres = ["Todos", ...new Set(movies.map((movie) => movie.genre))];
-
-  const filteredMovies = movies.filter((movie) => {
-    const matchesTitle = movie.title
-      .toLowerCase()
-      .includes(searchText.toLowerCase());
-    const matchesGenre =
-      selectedGenre === "Todos" || movie.genre === selectedGenre;
-
-    return matchesTitle && matchesGenre;
-  });
-
-  const movieToShow =
-    filteredMovies.find((movie) => movie.title === selectedMovie.title) ||
-    filteredMovies[0] ||
-    null;
+  const color = GENRE_COLORS[movie.genre] || "#e50914";
 
   return (
-    <div className={`app ${theme}`}>
-      <header className="hero">
-        <div className="heroTopRow">
-          <p className="badge">Catálogo 2026</p>
-          <button
-            className="themeButton"
-            onClick={() =>
-              setTheme((currentTheme) =>
-                currentTheme === "dark" ? "light" : "dark"
-              )
-            }
-            aria-label={
-              theme === "dark"
-                ? "Activar modo claro"
-                : "Activar modo oscuro"
-            }
-            title={theme === "dark" ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
-          >
-            {theme === "dark" ? "🌙" : "☀️"}
-          </button>
-        </div>
-        <h1>Descubre tu próxima película</h1>
-        <p className="subtitle">
-          Busca por nombre, filtra por género y reproduce el tráiler al
-          instante.
-        </p>
-      </header>
-
-      <div className="filters">
-        <input
-          type="text"
-          placeholder="Buscar por nombre..."
-          value={searchText}
-          onChange={(event) => setSearchText(event.target.value)}
-          className="searchInput"
+    <div className="modalBackdrop" onClick={onClose}>
+      <div className="modalContent" onClick={(e) => e.stopPropagation()}>
+        <button className="modalClose" onClick={onClose} aria-label="Cerrar">✕</button>
+        <iframe
+          src={`${movie.trailer}?autoplay=1`}
+          title={movie.title}
+          allowFullScreen
+          allow="autoplay"
         />
-
-        <select
-          value={selectedGenre}
-          onChange={(event) => setSelectedGenre(event.target.value)}
-          className="genreSelect"
-        >
-          {genres.map((genre) => (
-            <option key={genre} value={genre}>
-              {genre}
-            </option>
-          ))}
-        </select>
-
-        <button onClick={clearFilters} className="clearButton">
-          Limpiar filtros
-        </button>
+        <div className="modalInfo">
+          <span className="modalBadge" style={{ backgroundColor: color }}>
+            {movie.genre}
+          </span>
+          <h2 className="modalTitle">{movie.title}</h2>
+          <p className="modalMeta">{movie.year} · Tráiler oficial</p>
+        </div>
       </div>
+    </div>
+  );
+}
 
-      <p className="resultsText">
-        {filteredMovies.length === 1
-          ? "1 resultado encontrado"
-          : `${filteredMovies.length} resultados encontrados`}
-      </p>
+function MovieCard({ movie, isActive, query, onOpen }) {
+  const color = GENRE_COLORS[movie.genre] || "#e50914";
+  const thumb = getThumbUrl(movie.trailer);
 
-      <section className="contentLayout">
-        <div className="movieListPanel">
-          <div className="movies">
-            {filteredMovies.map((movie) => (
+  return (
+    <button
+      className={`nfCard ${isActive ? "nfCardActive" : ""}`}
+      onClick={onOpen}
+      style={{ "--genre-color": color }}
+    >
+      <img
+        className="nfCardImg"
+        src={thumb}
+        alt={movie.title}
+        loading="lazy"
+      />
+      <div className="nfCardOverlay">
+        <div className="nfCardInfo">
+          <span className="nfCardTitle">
+            <HighlightedText text={movie.title} query={query} />
+          </span>
+          <span className="nfCardMeta">
+            {movie.year} · {movie.genre}
+          </span>
+        </div>
+      </div>
+    </button>
+  );
+}
+
+function App() {
+  const [selectedMovie, setSelectedMovie] = useState(movies[0]);
+  const [modalMovie, setModalMovie] = useState(null);
+  const [searchText, setSearchText] = useState("");
+  const [selectedYear, setSelectedYear] = useState("Todos");
+  const [sortBy, setSortBy] = useState("relevance");
+  const searchRef = useRef(null);
+
+  const years = [
+    "Todos",
+    ...[...new Set(movies.map((m) => m.year))].sort((a, b) => b - a),
+  ];
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+        e.preventDefault();
+        searchRef.current?.focus();
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  const isFiltering = searchText.trim() !== "" || selectedYear !== "Todos";
+
+  const filteredMovies = movies
+    .filter((movie) => {
+      const matchesTitle = movie.title
+        .toLowerCase()
+        .includes(searchText.toLowerCase());
+      const matchesYear =
+        selectedYear === "Todos" || movie.year === Number(selectedYear);
+      return matchesTitle && matchesYear;
+    })
+    .sort((a, b) => {
+      if (sortBy === "az") return a.title.localeCompare(b.title);
+      if (sortBy === "za") return b.title.localeCompare(a.title);
+      if (sortBy === "newest") return b.year - a.year;
+      if (sortBy === "oldest") return a.year - b.year;
+      return 0;
+    });
+
+  const genres = [...new Set(movies.map((m) => m.genre))];
+  const heroColor = GENRE_COLORS[selectedMovie.genre] || "#e50914";
+
+  function openMovie(movie) {
+    setSelectedMovie(movie);
+    setModalMovie(movie);
+  }
+
+  return (
+    <div className="nfApp">
+      {/* MODAL */}
+      {modalMovie && (
+        <TrailerModal movie={modalMovie} onClose={() => setModalMovie(null)} />
+      )}
+
+      {/* NAVBAR */}
+      <nav className="nfNav">
+        <div className="nfNavLogo">
+          <span className="nfLogoMark">PF</span>
+          <span className="nfLogoName">PaolaFilmCat</span>
+        </div>
+
+        <div className="nfNavControls">
+          <div className="nfSearchBox">
+            <svg
+              className="nfSearchIcon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <input
+              ref={searchRef}
+              type="text"
+              placeholder="Buscar... (Ctrl+K)"
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              className="nfSearchInput"
+            />
+            {searchText && (
               <button
-                key={movie.title}
-                onClick={() => setSelectedMovie(movie)}
-                className={`movieButton ${
-                  movieToShow?.title === movie.title ? "movieButtonActive" : ""
-                }`}
+                className="nfClearBtn"
+                onClick={() => setSearchText("")}
+                aria-label="Limpiar búsqueda"
               >
-                <span className="movieTitle">{movie.title}</span>
-                <span className="movieMeta">
-                  {movie.genre} • {movie.year}
-                </span>
+                ✕
               </button>
-            ))}
+            )}
           </div>
 
-          {filteredMovies.length === 0 && (
-            <p className="emptyState">
-              No hay películas que coincidan con tu búsqueda.
-            </p>
+          <select
+            value={selectedYear}
+            onChange={(e) => setSelectedYear(e.target.value)}
+            className="nfSelect"
+          >
+            {years.map((y) => (
+              <option key={y} value={y}>
+                {y === "Todos" ? "Año" : y}
+              </option>
+            ))}
+          </select>
+
+          {isFiltering && (
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="nfSelect"
+            >
+              <option value="relevance">Ordenar</option>
+              <option value="az">A → Z</option>
+              <option value="za">Z → A</option>
+              <option value="newest">Más reciente</option>
+              <option value="oldest">Más antiguo</option>
+            </select>
+          )}
+
+          {isFiltering && (
+            <button
+              className="nfResetBtn"
+              onClick={() => {
+                setSearchText("");
+                setSelectedYear("Todos");
+                setSortBy("relevance");
+              }}
+            >
+              Limpiar
+            </button>
           )}
         </div>
+      </nav>
 
-        {movieToShow && (
-          <div className="trailerPanel">
-            <div className="trailer">
-              <div className="trailerHeader">
-                <h2>{movieToShow.title}</h2>
-                <span className="trailerGenre">{movieToShow.genre}</span>
-              </div>
-              <p>{movieToShow.year} • Tráiler oficial</p>
-
-              <iframe
-                src={movieToShow.trailer}
-                title={movieToShow.title}
-                allowFullScreen
-              ></iframe>
-            </div>
+      {/* HERO */}
+      {!isFiltering && (
+        <section className="nfHero">
+          <div
+            className="nfHeroGlow"
+            style={{
+              background: `radial-gradient(ellipse at 70% 40%, ${heroColor}2e 0%, transparent 65%)`,
+            }}
+          />
+          <div className="nfHeroContent">
+            <span className="nfHeroBadge" style={{ backgroundColor: heroColor }}>
+              {selectedMovie.genre}
+            </span>
+            <h1 className="nfHeroTitle">{selectedMovie.title}</h1>
+            <p className="nfHeroMeta">{selectedMovie.year} · Tráiler oficial</p>
+            <button
+              className="nfHeroPlayBtn"
+              style={{ "--hc": heroColor }}
+              onClick={() => setModalMovie(selectedMovie)}
+            >
+              ▶ Ver tráiler
+            </button>
           </div>
+          <div className="nfHeroEmbed">
+            <img
+              className="nfHeroThumb"
+              src={getThumbUrl(selectedMovie.trailer)}
+              alt={selectedMovie.title}
+              onClick={() => setModalMovie(selectedMovie)}
+            />
+          </div>
+        </section>
+      )}
+
+      {/* CONTENT */}
+      <main className={`nfMain ${isFiltering ? "nfMainSearch" : ""}`}>
+        {isFiltering ? (
+          <section className="nfResults">
+            <h2 className="nfResultsTitle">
+              {filteredMovies.length > 0
+                ? `${filteredMovies.length} resultado${filteredMovies.length !== 1 ? "s" : ""}`
+                : "Sin resultados"}
+            </h2>
+            {filteredMovies.length === 0 ? (
+              <p className="nfEmpty">
+                No hay películas que coincidan con tu búsqueda.
+              </p>
+            ) : (
+              <div className="nfGrid">
+                {filteredMovies.map((movie) => (
+                  <MovieCard
+                    key={movie.title}
+                    movie={movie}
+                    isActive={selectedMovie.title === movie.title}
+                    query={searchText}
+                    onOpen={() => openMovie(movie)}
+                  />
+                ))}
+              </div>
+            )}
+          </section>
+        ) : (
+          genres.map((genre) => (
+            <section key={genre} className="nfRow">
+              <h2
+                className="nfRowLabel"
+                style={{ "--c": GENRE_COLORS[genre] || "#e50914" }}
+              >
+                {genre}
+              </h2>
+              <div className="nfRowTrack">
+                {movies
+                  .filter((m) => m.genre === genre)
+                  .map((movie) => (
+                    <MovieCard
+                      key={movie.title}
+                      movie={movie}
+                      isActive={selectedMovie.title === movie.title}
+                      query=""
+                      onOpen={() => openMovie(movie)}
+                    />
+                  ))}
+              </div>
+            </section>
+          ))
         )}
-      </section>
+      </main>
     </div>
   );
 }
