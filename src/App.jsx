@@ -229,7 +229,7 @@ function App() {
     <div className={`app ${theme}`}>
       <header className="hero">
         <div className="heroTopRow">
-          <p className="badge">Catálogo 2024</p>
+          <p className="badge">Catálogo 2026</p>
           <button
             className="themeButton"
             onClick={() =>
@@ -237,8 +237,14 @@ function App() {
                 currentTheme === "dark" ? "light" : "dark"
               )
             }
+            aria-label={
+              theme === "dark"
+                ? "Activar modo claro"
+                : "Activar modo oscuro"
+            }
+            title={theme === "dark" ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
           >
-            {theme === "dark" ? "Modo claro" : "Modo oscuro"}
+            {theme === "dark" ? "🌙" : "☀️"}
           </button>
         </div>
         <h1>Descubre tu próxima película</h1>

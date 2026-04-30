@@ -85,14 +85,26 @@ body[data-theme="light"] {
 }
 
 .themeButton {
-  padding: 6px 12px;
-  border-radius: 999px;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 50%;
   border: 1px solid var(--border-soft);
   background-color: var(--surface-1);
   color: var(--text-main);
   font-family: inherit;
-  font-weight: 600;
+  font-size: 1.1rem;
+  line-height: 1;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.themeButton:hover {
+  transform: translateY(-1px);
+  border-color: var(--accent);
 }
 
 .filters {
